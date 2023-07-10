@@ -1,6 +1,9 @@
 import xml.etree.ElementTree as ET
+import requests
+import os
+# from tkinter import *
 
-COMPANY_NAME = "City of Fortuna"
+COMPANY_NAME = "TestCompany"
 FILE_NAME = "config-cityhall.fortuna.local-20230710084951.xml"
 
 # Get parsed XML data from file.
@@ -29,3 +32,15 @@ content += f"{COMPANY_NAME},{lan.find('if').text},{lan.find('ipaddr').text},LAN,
 f = open('network-devices.csv', 'w')
 f.writelines(content)
 f.close()
+
+def getCompanies():
+    api_url = "https://hudu.nylex.net/api/v1/companies?page_size=200"
+    headers = {"x-api-key":os.environ.get('API_KEY'), "Content-Type": "application/json"}
+    response = requests.get(api_url, headers=headers)
+    if response.status_code == 200:
+        companyDict = dict()
+        for comp in response.json().companies:
+            companyDict[comp.id] = comp.name
+        return companyDict
+    else:
+        return dict()
