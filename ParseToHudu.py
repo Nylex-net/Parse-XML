@@ -4,7 +4,7 @@ import os
 from tkinter import *
 from tkinter.filedialog import askopenfile
 
-def portData(companyName, file):
+def portData(companyName, file, rooty):
     COMPANY_NAME = companyName
     # FILE_NAME = "config-cityhall.fortuna.local-20230710084951.xml"
 
@@ -36,6 +36,15 @@ def portData(companyName, file):
     f.writelines(content)
     f.close()
 
+    rooty.destroy()
+    rooty = Tk()
+    rooty.geometry("600x100")
+    lbl = Label(rooty, text="Your network devices CSV has been created.\nLook for 'network-devices.csv' in the same directory as this program.")
+    lbl.pack()
+    btn = Button(rooty, text ='OK', command=rooty.destroy)
+    btn.pack(side = TOP, pady = 10)
+    rooty.mainloop()
+
 def getCompanies():
     api_url = "https://hudu.nylex.net/api/v1/companies?page_size=200"
     headers = {"x-api-key":os.environ.get('API_KEY'), "Content-Type": "application/json"} # os.environ.get('API_KEY')
@@ -50,16 +59,24 @@ def getCompanies():
 # file in read mode and only Python files
 # will be opened
 def open_file():
-    file = askopenfile(mode ='r', filetypes =[('XML Files', '*.xml')])
-    if file is not None:
-        content = file.read()
-        print(content)
+    Filer = askopenfile(mode ='r', filetypes =[('XML Files', '*.xml')])
+    global FILER
+    if Filer is not None:
+        FILER = ''.join(Filer.readlines())
+        conv.config(state='active')
+    else:
+        FILER = None
+        
+# def if_selections(selected_value):
+#     if Filer is not None:
+#         conv.config(state='active')
+        
 
 # Create object
 root = Tk()
   
 # Adjust size
-root.geometry( "400x400" )
+root.geometry("400x400")
 
 options = getCompanies()
 optionsList = list()
@@ -69,12 +86,15 @@ for comp in options.values():
 # datatype of menu text
 clicked = StringVar()
 # initial menu text
-clicked.set( "Select a Company" )
+clicked.set( "Nylex" )
 
-drop = OptionMenu( root , clicked , *optionsList )
+drop = OptionMenu( root , clicked , *optionsList)
 drop.pack()
 
-btn = Button(root, text ='Open', command = lambda:open_file())
+btn = Button(root, text ='Load file', command=open_file)
 btn.pack(side = TOP, pady = 10)
+
+conv = Button(root, text ='Convert to CSV', command = lambda:portData(clicked.get(), FILER, root), state='disabled')
+conv.pack(side = TOP, pady = 10)
 # Execute tkinter
 root.mainloop()
