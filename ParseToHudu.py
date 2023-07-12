@@ -47,7 +47,7 @@ def portData(companyName, file, rooty):
 
 def getCompanies():
     api_url = "https://hudu.nylex.net/api/v1/companies?page_size=200"
-    headers = {"x-api-key":os.environ.get('API_KEY'), "Content-Type": "application/json"} # os.environ.get('API_KEY')
+    headers = {"x-api-key":key, "Content-Type": "application/json"}
     response = requests.get(api_url, headers=headers)
     companyDict = dict()
     if response.status_code == 200:
@@ -71,7 +71,9 @@ def open_file():
 #     if Filer is not None:
 #         conv.config(state='active')
         
-
+f = open("api-key.txt", "r")
+key = f.readline()
+f.close()
 # Create object
 root = Tk()
   
