@@ -32,7 +32,6 @@ def portData(companyName, file, rooty):
     headers = {"x-api-key":key, "Content-Type": "application/json"}
     response = requests.post(api_url, headers=headers, data=json.dumps(data))
 
-    print(response.status_code)
     rooty.destroy()
     rooty = Tk()
     rooty.geometry("600x100")
